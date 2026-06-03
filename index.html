@@ -28,14 +28,39 @@
     });
   })();
   </script>
+  
+  <style>
+    /* Styling to make your custom credit text look clean and professional */
+    .ported-credit {
+      color: #00aeef;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 5px;
+      text-shadow: 0px 0px 8px rgba(0, 174, 239, 0.6);
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+  </style>
 </head>
 <body>
   <div id="unity-container">
     <canvas id="unity-canvas" tabindex="-1"></canvas>
+    
+    <div id="unity-loading-bar" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+      <div id="unity-game-name" style="font-size: 24px; font-weight: bold;">Grow Castle - Tower Defense</div>
+      
+      <div class="ported-credit">Ported by CoreScripts</div>
+      
+      <div id="custom-loading-spinner" style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
+        <div class="spinner"></div>
+        <div class="spinner-text" style="margin-top: 10px;">Loading Game Engine...</div>
+      </div>
+    </div>
   </div>
 
   <script>
     const canvas = document.querySelector("#unity-canvas");
+    const loadingBar = document.querySelector("#unity-loading-bar");
     const buildUrl = "Build";
     
     // Using the simplified, clean filenames we created
@@ -59,6 +84,8 @@
         // Handled by style.css loading layout
       }).then((instance) => {
         window.unityInstance = instance;
+        // Hide the loading bar and your credit line once the game starts playing
+        if (loadingBar) loadingBar.style.display = "none";
       }).catch((message) => {
         alert("Unity Load Error: " + message);
       });
