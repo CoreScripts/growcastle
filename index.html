@@ -4,11 +4,15 @@
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>Unity WebGL Player | Grow Castle - Tower Defense</title>
+  
+  <link rel="stylesheet" href="TemplateData/style.css">
+  
   <script>
     window.unityInstance = null;
   </script>
   <script>
   (function () {
+    // This function checks every 100ms if Unity is ready, then unlocks it
     function waitForUnity(cb) {
       const t = setInterval(() => {
         if (window.unityInstance && window.unityInstance.SendMessage) {
@@ -17,16 +21,13 @@
         }
       }, 100);
     }
-    // Always force the game to unlock on GitHub Pages
+    
+    // Always force the game to bypass site verification on GitHub Pages
     waitForUnity(() => {
       unityInstance.SendMessage('H5MadKidGames', 'H5_OnDomainApproved');
     });
   })();
   </script>
-  <style>
-    body { margin: 0; background-color: #232323; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-    canvas { background: #000; }
-  </style>
 </head>
 <body>
   <div id="unity-container">
@@ -37,28 +38,29 @@
     const canvas = document.querySelector("#unity-canvas");
     const buildUrl = "Build";
     
-    // 🔍 FIXED: These now exactly match the file names from your screenshots!
-    const loaderUrl = buildUrl + "/7a2dbded24d57e056180125b1583e7c4.loader.js";
+    // Using the simplified, clean filenames we created
+    const loaderUrl = buildUrl + "/game.loader.js";
 
     const config = {
-      dataUrl: buildUrl + "/68cd96a6058d4a974b62db80ebfa2e7d.data",
-      frameworkUrl: buildUrl + "/a7b4e3069ed1f5be1ae8a5f463caee42.framework.js",
-      codeUrl: buildUrl + "/c2a72e43f6db19aeaa0a6021b2b43782.wasm",
+      dataUrl: buildUrl + "/game.data",
+      frameworkUrl: buildUrl + "/game.framework.js",
+      codeUrl: buildUrl + "/game.wasm",
       streamingAssetsUrl: "StreamingAssets",
       companyName: "madkidgames.com",
       productName: "Grow Castle - Tower Defense",
       productVersion: "1.11.4",
     };
 
+    // Dynamically inject the loader script into the browser page
     const script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
       createUnityInstance(canvas, config, (progress) => {
-        // Loading progress tracking
+        // Handled by style.css loading layout
       }).then((instance) => {
         window.unityInstance = instance;
       }).catch((message) => {
-        alert(message);
+        alert("Unity Load Error: " + message);
       });
     };
     document.body.appendChild(script);
