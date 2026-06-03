@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
   <script>
-    
     window.alert = function() { return true; };
     window.adConfig = {};
     window.unityInstance = null;
@@ -22,7 +21,7 @@
   </script>
   <style>
     body { margin: 0; background-color: #232323; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
-    canvas { background: #000; }
+    canvas { background: #000; display: block; }
     .credit-text { color: #ffffff; font-size: 38px; font-family: "Jersey 10", sans-serif; }
   </style>
 </head>
@@ -58,12 +57,16 @@
       }).catch(() => {});
     };
     document.body.appendChild(script);
-    window.addEventListener('resize', () => {
+
+    function resize() {
       const aspect = 16 / 9;
       let w = window.innerWidth, h = window.innerWidth / aspect;
       if (h > window.innerHeight) { h = window.innerHeight; w = h * aspect; }
       if (canvas) { canvas.style.width = `${w}px`; canvas.style.height = `${h}px`; }
-    });
+    }
+    window.addEventListener('load', resize);
+    window.addEventListener('resize', resize);
+    resize(); // Forces the window to scale up instantly on load
   </script>
 </body>
 </html>
