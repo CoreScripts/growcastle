@@ -11,7 +11,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
 
   <script>
+    //fake ad config so no more error?
+    window.adConfig = {};
     window.unityInstance = null;
+    
     (function () {
       const loop = setInterval(() => {
         if (window.unityInstance?.SendMessage) {
@@ -31,13 +34,6 @@
       font-weight: 400;
       font-style: normal;
       letter-spacing: 1px;
-      transition: opacity 2s ease, transform 2s ease;
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .credit-text.fade {
-      opacity: 0;
-      transform: translateX(50px);
     }
   </style>
 </head>
@@ -55,7 +51,6 @@
   <script>
     const canvas = document.querySelector("#unity-canvas");
     const loadingBar = document.querySelector("#unity-loading-bar");
-    const attribution = document.querySelector("#attribution");
     const buildUrl = "Build";
     
     const config = {
@@ -74,12 +69,7 @@
       createUnityInstance(canvas, config, () => {})
         .then((instance) => {
           window.unityInstance = instance;
-          if (attribution) {
-            attribution.classList.add("fade");
-            setTimeout(() => {
-              if (loadingBar) loadingBar.style.display = "none";
-            }, 2000);
-          } else if (loadingBar) {
+          if (loadingBar) {
             loadingBar.style.display = "none";
           }
         })
