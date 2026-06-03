@@ -3,57 +3,51 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Unity WebGL Player | Grow Castle - Tower Defense</title>
-  
+  <title>Unity WebGL Player</title>
   <link rel="stylesheet" href="TemplateData/style.css">
   
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+
   <script>
     window.unityInstance = null;
-  </script>
-  <script>
-  (function () {
-    // This function checks every 100ms if Unity is ready, then unlocks it
-    function waitForUnity(cb) {
-      const t = setInterval(() => {
-        if (window.unityInstance && window.unityInstance.SendMessage) {
-          clearInterval(t);
-          cb();
+    (function () {
+      const loop = setInterval(() => {
+        if (window.unityInstance?.SendMessage) {
+          clearInterval(loop);
+          window.unityInstance.SendMessage('H5MadKidGames', 'H5_OnDomainApproved');
         }
       }, 100);
-    }
-    
-    // Always force the game to bypass site verification on GitHub Pages
-    waitForUnity(() => {
-      unityInstance.SendMessage('H5MadKidGames', 'H5_OnDomainApproved');
-    });
-  })();
+    })();
   </script>
-  
   <style>
-    /* Styling to make your custom credit text look clean and professional */
-    .ported-credit {
-      color: #00aeef;
-      font-size: 16px;
-      font-weight: bold;
-      margin-top: 5px;
-      text-shadow: 0px 0px 8px rgba(0, 174, 239, 0.6);
-      text-align: center;
-      font-family: Arial, sans-serif;
+    body { margin: 0; background-color: #232323; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; }
+    canvas { background: #000; }
+    .credit-text {
+      color: #ffffff;
+      font-size: 38px;
+      font-family: "Jersey 10", sans-serif;
+      font-weight: 400;
+      font-style: normal;
+      letter-spacing: 1px;
+      transition: opacity 2s ease, transform 2s ease;
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .credit-text.fade {
+      opacity: 0;
+      transform: translateX(50px);
     }
   </style>
 </head>
 <body>
   <div id="unity-container">
     <canvas id="unity-canvas" tabindex="-1"></canvas>
-    
-    <div id="unity-loading-bar" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
-      <div id="unity-game-name" style="font-size: 24px; font-weight: bold;">Grow Castle - Tower Defense</div>
-      
-      <div class="ported-credit">Ported by CoreScripts</div>
-      
+    <div id="unity-loading-bar" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center;">
+      <div id="attribution" class="credit-text">Ported by CoreScripts</div>
       <div id="custom-loading-spinner" style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
         <div class="spinner"></div>
-        <div class="spinner-text" style="margin-top: 10px;">Loading Game Engine...</div>
       </div>
     </div>
   </div>
@@ -61,56 +55,55 @@
   <script>
     const canvas = document.querySelector("#unity-canvas");
     const loadingBar = document.querySelector("#unity-loading-bar");
+    const attribution = document.querySelector("#attribution");
     const buildUrl = "Build";
     
-    // Using the simplified, clean filenames we created
-    const loaderUrl = buildUrl + "/game.loader.js";
-
     const config = {
-      dataUrl: buildUrl + "/game.data",
-      frameworkUrl: buildUrl + "/game.framework.js",
-      codeUrl: buildUrl + "/game.wasm",
+      dataUrl: `${buildUrl}/game.data`,
+      frameworkUrl: `${buildUrl}/game.framework.js`,
+      codeUrl: `${buildUrl}/game.wasm`,
       streamingAssetsUrl: "StreamingAssets",
       companyName: "madkidgames.com",
       productName: "Grow Castle - Tower Defense",
       productVersion: "1.11.4",
     };
 
-    // Dynamically inject the loader script into the browser page
     const script = document.createElement("script");
-    script.src = loaderUrl;
+    script.src = `${buildUrl}/game.loader.js`;
     script.onload = () => {
-      createUnityInstance(canvas, config, (progress) => {
-        // Handled by style.css loading layout
-      }).then((instance) => {
-        window.unityInstance = instance;
-        // Hide the loading bar and your credit line once the game starts playing
-        if (loadingBar) loadingBar.style.display = "none";
-      }).catch((message) => {
-        alert("Unity Load Error: " + message);
-      });
+      createUnityInstance(canvas, config, () => {})
+        .then((instance) => {
+          window.unityInstance = instance;
+          if (attribution) {
+            attribution.classList.add("fade");
+            setTimeout(() => {
+              if (loadingBar) loadingBar.style.display = "none";
+            }, 2000);
+          } else if (loadingBar) {
+            loadingBar.style.display = "none";
+          }
+        })
+        .catch(() => {});
     };
     document.body.appendChild(script);
-  </script>
 
-  <script>
-  (function () {
-    function resizeUnityCanvas() {
-      const canvas = document.getElementById('unity-canvas');
-      if (!canvas) return;
-      const targetAspect = 16 / 9;
-      let newWidth = window.innerWidth;
-      let newHeight = window.innerWidth / targetAspect;
-      if (newHeight > window.innerHeight) {
-        newHeight = window.innerHeight;
-        newWidth = newHeight * targetAspect;
+    (function () {
+      function resize() {
+        const canvasEl = document.getElementById('unity-canvas');
+        if (!canvasEl) return;
+        const aspect = 16 / 9;
+        let w = window.innerWidth;
+        let h = window.innerWidth / aspect;
+        if (h > window.innerHeight) {
+          h = window.innerHeight;
+          w = h * aspect;
+        }
+        canvasEl.style.width = `${w}px`;
+        canvasEl.style.height = `${h}px`;
       }
-      canvas.style.width = newWidth + 'px';
-      canvas.style.height = newHeight + 'px';
-    }
-    window.addEventListener('load', resizeUnityCanvas);
-    window.addEventListener('resize', resizeUnityCanvas);
-  })();
+      window.addEventListener('load', resize);
+      window.addEventListener('resize', resize);
+    })();
   </script>
 </body>
 </html>
